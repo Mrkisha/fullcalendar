@@ -917,11 +917,15 @@ Grid.mixin({
 	// A cmp function for determining which segments should take visual priority
 	// DOES NOT WORK ON INVERTED BACKGROUND EVENTS because they have no eventStartMS/eventDurationMS
 	compareSegs: function(seg1, seg2) {
-		return (seg1.event.priority || 0) - (seg2.event.priority || 0) || // put higher priority events first
-			(seg1.rightCol - seg1.leftCol) - (seg2.rightCol - seg2.leftCol) || // if tie, put wider events firstseg1.eventStartMS - seg2.eventStartMS || // earlier events go first
-			seg2.eventDurationMS - seg1.eventDurationMS || // tie? longer events go first
-			seg2.event.allDay - seg1.event.allDay || // tie? put all-day events first (booleans cast to 0/1)
-			compareByFieldSpecs(seg1.event, seg2.event, this.view.eventOrderSpecs);
+		if (seg1.event.priority != null && seg2.event.priority != null) {
+			return seg1.event.priority - seg2.event.priority;
+		} else {
+			return (seg1.event.priority || 0) - (seg2.event.priority || 0) || // put higher priority events first
+				(seg1.rightCol - seg1.leftCol) - (seg2.rightCol - seg2.leftCol) || // if tie, put wider events firstseg1.eventStartMS - seg2.eventStartMS || // earlier events go first
+				seg2.eventDurationMS - seg1.eventDurationMS || // tie? longer events go first
+				seg2.event.allDay - seg1.event.allDay || // tie? put all-day events first (booleans cast to 0/1)
+				compareByFieldSpecs(seg1.event, seg2.event, this.view.eventOrderSpecs);
+		}
 	}
 
 });
